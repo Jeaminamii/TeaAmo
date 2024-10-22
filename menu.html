@@ -276,10 +276,21 @@
       let order = [];
       let totalPrice = 0;
     
+      // Function to add an item to the order
+      function addToOrder(name, price, card) {
+        order.push({ name, price, card });
+        totalPrice += price;
+        updateOrderSummary();
+        
+        // Remove the card immediately after selection
+        card.remove();
+      }
+    
       const productCards = document.querySelectorAll(".card");
       const orderSummary = document.getElementById("order-summary");
       const closeSummaryButton = document.getElementById("close-summary");
     
+      // Add event listener for each product card
       productCards.forEach((card) => {
         card.addEventListener("click", () => {
           const productName = card.querySelector("h3").innerText;
@@ -292,12 +303,7 @@
         });
       });
     
-      function addToOrder(name, price, card) {
-        order.push({ name, price, card });
-        totalPrice += price;
-        updateOrderSummary();
-      }
-    
+      // Function to update the order summary
       function updateOrderSummary() {
         const orderList = document.getElementById("order-list");
         orderList.innerHTML = "";
@@ -309,15 +315,15 @@
           orderList.appendChild(orderItem);
         });
     
-        document.getElementById(
-          "total-price"
-        ).innerText = `Total: ₱${totalPrice}`;
+        document.getElementById("total-price").innerText = `Total: ₱${totalPrice}`;
       }
     
+      // Close summary event listener
       closeSummaryButton.addEventListener("click", () => {
         orderSummary.style.display = "none";
       });
     
+      // Function to handle placing the order
       function placeOrder() {
         if (order.length === 0) {
           alert("Your order is empty.");
@@ -335,9 +341,10 @@
         order = [];
         totalPrice = 0;
         updateOrderSummary();
-        orderSummary.style.display = "none"; // Hide order summary after placing order
+        orderSummary.style.display = "none"; // Hide order summary after placing the order
       }
     </script>
+    
     
   </body>
 </html>
