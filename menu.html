@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="navbar.css" />
     <title>Tea Amo Menu</title>
+
     <style></style>
   </head>
 
@@ -34,6 +35,26 @@
     </nav>
 
     <style>
+      .remove-item {
+        font-size: 8px; /* Make the font smaller */
+        padding: 0; /* Remove padding for a smaller button */
+        background-color: white;
+        border: none;
+        color: red;
+        cursor: pointer;
+        width: 2px;
+      }
+
+      .remove-item:hover {
+        color: darkred;
+      }
+
+      .remove-item button {
+        width: 2px; /* Adjust width */
+        height: 2px;
+        border-radius: 20px; /* Adjust height */
+      }
+
       .logo {
         display: flex;
         align-items: center;
@@ -275,21 +296,11 @@
     <script>
       let order = [];
       let totalPrice = 0;
-    
-      // Function to add an item to the order
-      function addToOrder(name, price, card) {
-        order.push({ name, price, card });
-        totalPrice += price;
-        updateOrderSummary();
-        
-        // Remove the card immediately after selection
-        card.remove();
-      }
-    
+
       const productCards = document.querySelectorAll(".card");
       const orderSummary = document.getElementById("order-summary");
       const closeSummaryButton = document.getElementById("close-summary");
-    
+
       // Add event listener for each product card
       productCards.forEach((card) => {
         card.addEventListener("click", () => {
@@ -297,46 +308,73 @@
           const productPrice = parseFloat(
             card.querySelector(".cash").innerText.replace("₱", "")
           );
-    
-          addToOrder(productName, productPrice, card);
+
+          addToOrder(productName, productPrice);
           orderSummary.style.display = "block";
         });
       });
-    
+
+      // Function to add an item to the order
+      function addToOrder(name, price) {
+        order.push({ name, price });
+        totalPrice += price;
+        updateOrderSummary();
+      }
+
       // Function to update the order summary
       function updateOrderSummary() {
         const orderList = document.getElementById("order-list");
         orderList.innerHTML = "";
-    
-        order.forEach((item) => {
+
+        order.forEach((item, index) => {
           const orderItem = document.createElement("div");
           orderItem.classList.add("order-item");
-          orderItem.innerHTML = `<span>${item.name}</span><span>₱${item.price}</span>`;
+          orderItem.innerHTML = `
+            <span>${item.name}</span>
+            <span>₱${item.price}</span>
+            <button class="remove-item" data-index="${index}">X</button>
+          `;
           orderList.appendChild(orderItem);
         });
-    
-        document.getElementById("total-price").innerText = `Total: ₱${totalPrice}`;
+
+        document.getElementById(
+          "total-price"
+        ).innerText = `Total: ₱${totalPrice}`;
+
+        // Add event listeners to remove buttons
+        const removeButtons = document.querySelectorAll(".remove-item");
+        removeButtons.forEach((button) => {
+          button.addEventListener("click", (event) => {
+            const index = event.target.getAttribute("data-index");
+            removeFromOrder(index);
+          });
+        });
       }
-    
+
+      // Function to remove an item from the order
+      function removeFromOrder(index) {
+        // Subtract the price from totalPrice
+        totalPrice -= order[index].price;
+        // Remove the item from order
+        order.splice(index, 1);
+        // Update the order summary
+        updateOrderSummary();
+      }
+
       // Close summary event listener
       closeSummaryButton.addEventListener("click", () => {
         orderSummary.style.display = "none";
       });
-    
+
       // Function to handle placing the order
       function placeOrder() {
         if (order.length === 0) {
           alert("Your order is empty.");
           return;
         }
-    
+
         alert("Thank you for your order!");
-    
-        // Remove the selected products from the DOM
-        order.forEach((item) => {
-          item.card.remove(); // This will remove the product from the shop
-        });
-    
+
         // Reset order
         order = [];
         totalPrice = 0;
@@ -344,7 +382,5 @@
         orderSummary.style.display = "none"; // Hide order summary after placing the order
       }
     </script>
-    
-    
   </body>
 </html>
