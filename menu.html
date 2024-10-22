@@ -275,57 +275,62 @@
     <script>
       let order = [];
       let totalPrice = 0;
-
+    
       const productCards = document.querySelectorAll(".card");
       const orderSummary = document.getElementById("order-summary");
       const closeSummaryButton = document.getElementById("close-summary");
-
+    
       productCards.forEach((card) => {
         card.addEventListener("click", () => {
           const productName = card.querySelector("h3").innerText;
           const productPrice = parseFloat(
             card.querySelector(".cash").innerText.replace("₱", "")
           );
-
-          addToOrder(productName, productPrice);
+    
+          addToOrder(productName, productPrice, card);
           orderSummary.style.display = "block";
         });
       });
-
-      function addToOrder(name, price) {
-        order.push({ name, price });
+    
+      function addToOrder(name, price, card) {
+        order.push({ name, price, card });
         totalPrice += price;
         updateOrderSummary();
       }
-
+    
       function updateOrderSummary() {
         const orderList = document.getElementById("order-list");
         orderList.innerHTML = "";
-
+    
         order.forEach((item) => {
           const orderItem = document.createElement("div");
           orderItem.classList.add("order-item");
           orderItem.innerHTML = `<span>${item.name}</span><span>₱${item.price}</span>`;
           orderList.appendChild(orderItem);
         });
-
+    
         document.getElementById(
           "total-price"
         ).innerText = `Total: ₱${totalPrice}`;
       }
-
+    
       closeSummaryButton.addEventListener("click", () => {
         orderSummary.style.display = "none";
       });
-
+    
       function placeOrder() {
         if (order.length === 0) {
           alert("Your order is empty.");
           return;
         }
-
+    
         alert("Thank you for your order!");
-
+    
+        // Remove the selected products from the DOM
+        order.forEach((item) => {
+          item.card.remove(); // This will remove the product from the shop
+        });
+    
         // Reset order
         order = [];
         totalPrice = 0;
@@ -333,5 +338,6 @@
         orderSummary.style.display = "none"; // Hide order summary after placing order
       }
     </script>
+    
   </body>
 </html>
